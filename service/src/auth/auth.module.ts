@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
         console.log('f====', configService.get('JWT_SECRET'));
         return {
           secret: configService.get('JWT_SECRET'), // 从环境变量读取
-          signOptions: { expiresIn: '60s' }, // token 过期时间
+          signOptions: { expiresIn: '1h' }, // token 过期时间
         };
       },
       inject: [ConfigService],

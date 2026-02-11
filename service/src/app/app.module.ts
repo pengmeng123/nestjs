@@ -24,7 +24,7 @@ import { User } from '@/user/entities/user.entity';
         host: 'localhost', // 数据库地址（本地）
         port: 3306, // MySQL 端口
         username: 'root', // 数据库用户名
-        password: 'aaa123456', // 数据库密码
+        password: configService.get('PASSWORD'), // 数据库密码
         database: 'blogs', // 数据库名（需先在 MySQL 手动创建）
         // entities: [join(__dirname, '**', '*.entity.{ts,js}')], // 用 join 适配系统路径
         entities: [User],
