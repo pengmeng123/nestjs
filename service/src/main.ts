@@ -9,6 +9,8 @@ if (!global.crypto) {
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +23,10 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  // 全局响应拦截器
+  app.useGlobalInterceptors(new TransformInterceptor());
+  // 全局异常过滤器
+  app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(3000);
 }
 bootstrap();

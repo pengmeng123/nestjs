@@ -3,6 +3,7 @@ import { UserService } from '@/user/user.service';
 import { RegisterDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { BusinessException } from '@/common/exceptions/business.exception';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,7 @@ export class AuthService {
     const exists = await this.userService.findByUsername(name);
 
     if (exists) {
-      throw new BadRequestException('用户名已存在');
+      throw new BusinessException('用户名已存在', 10001);
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     return this.userService.create({

@@ -16,8 +16,8 @@ export class User {
 
   @Column({
     type: 'datetime',
-    name: 'created_at',
+    name: 'createDate',
     default: () => 'CURRENT_TIMESTAMP',
   })
-  created_at: Date;
+  createDate: Date;
 }
