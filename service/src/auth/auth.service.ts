@@ -40,4 +40,16 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+  async getProfile(userId: number) {
+    // 排除 password 字段
+    const user = await this.userService.findOne(userId);
+    if (user) {
+      return {
+        ...user,
+        password: undefined,
+      };
+    }
+    return null;
+  }
 }

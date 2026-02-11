@@ -27,6 +27,9 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('/profile')
   getProfile(@Request() req) {
-    return req.user;
+    console.log('req---', req);
+    // req.user 只有 token 中的基本信息 (payload)
+    // 需要根据 payload 中的 id 去数据库查询完整信息
+    return this.authService.getProfile(req.user.sub);
   }
 }

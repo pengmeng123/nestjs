@@ -12,4 +12,8 @@ export class UserService {
   create(dto) {
     return this.userRepository.save(dto);
   }
+
+  findOne(id: number) {
+    return this.userRepository.findOne({ where: { id } });
+  }
 }
