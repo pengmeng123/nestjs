@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+# 环境变量文件（不要提交）
+.env
+.env.*
+
 # Logs
 logs
 *.log

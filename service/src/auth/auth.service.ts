@@ -2,10 +2,14 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
 import { RegisterDto } from './auth.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) {}
   async register(dto: RegisterDto) {
     const { name, password } = dto;
     const exists = await this.userService.findByUsername(name);
@@ -18,5 +22,21 @@ export class AuthService {
       ...dto,
       password: hashedPassword,
     });
+  }
+
+  async login(dto) {
+    const { name, password } = dto;
+    const user = await this.userService.findByUsername(name);
+    if (!user) {
+      throw new BadRequestException('用户名或密码错误');
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException('用户名或密码错误');
+    }
+    const payload = { sub: user.id, username: user.name };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };
   }
 }
