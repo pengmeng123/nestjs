@@ -13,7 +13,14 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
-  app.useGlobalPipes(new ValidationPipe());
+  // 校验逻辑
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // 自动剔除多余字段
+      forbidNonWhitelisted: true, // 多传字段直接报错
+      transform: true,
+    }),
+  );
   await app.listen(3000);
 }
 bootstrap();
