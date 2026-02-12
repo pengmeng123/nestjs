@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { UserProfile } from './user-profile.entity';
 
 @Entity()
 export class User {
@@ -13,6 +20,10 @@ export class User {
 
   @Column({ type: 'varchar', nullable: false, length: 255 })
   password: string;
+
+  @OneToOne(() => UserProfile, (profile) => profile.user, { cascade: true })
+  @JoinColumn()
+  profile: UserProfile;
 
   @Column({
     type: 'datetime',

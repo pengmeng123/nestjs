@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from '@/user/user.module';
@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
         console.log('f====', configService.get('JWT_SECRET'));
@@ -21,5 +21,6 @@ import { ConfigService } from '@nestjs/config';
   ],
   providers: [AuthService],
   controllers: [AuthController],
+  exports: [JwtModule], // 导出 JwtModule 供其他模块使用 AuthGuard
 })
 export class AuthModule {}
