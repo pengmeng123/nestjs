@@ -19,7 +19,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // 自动剔除多余字段
-      forbidNonWhitelisted: true, // 多传字段直接报错
+      forbidNonWhitelisted: false, // 多传字段直接报错
       transform: true,
     }),
   );

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UserModule } from '@/user/user.module';
@@ -7,13 +7,12 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    UserModule,
+    forwardRef(() => UserModule), //防止循环引用的写法
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => {
-        console.log('f====', configService.get('JWT_SECRET'));
         return {
           secret: configService.get('JWT_SECRET'), // 从环境变量读取
-          signOptions: { expiresIn: '1h' }, // token 过期时间
+          signOptions: { expiresIn: '12h' }, // token 过期时间
         };
       },
       inject: [ConfigService],
@@ -21,5 +20,6 @@ import { ConfigService } from '@nestjs/config';
   ],
   providers: [AuthService],
   controllers: [AuthController],
+  exports: [JwtModule],
 })
 export class AuthModule {}

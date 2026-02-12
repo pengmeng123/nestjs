@@ -6,7 +6,7 @@ export class UserProfile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'varchar', length: 20, nullable: false })
   phone: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })

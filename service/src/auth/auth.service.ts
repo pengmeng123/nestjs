@@ -41,9 +41,9 @@ export class AuthService {
     };
   }
 
-  async getProfile(userId: number) {
+  async getProfile(id: number) {
     // 排除 password 字段
-    const user = await this.userService.findOne(userId);
+    const user = await this.userService.findOne(id);
     if (user) {
       return {
         ...user,
