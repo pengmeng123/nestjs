@@ -9,6 +9,9 @@ import { UserProfile } from '@/user/entities/user-profile.entity';
 import { Article } from '@/article/entities/article.entity';
 import { Tag } from '@/tag/entities/tag.entity';
 import { Category } from '@/category/entities/category.entity';
+import { CategoryModule } from '@/category/category.module';
+import { TagModule } from '@/tag/tag.module';
+import { ArticleModule } from '@/article/article.module';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { Category } from '@/category/entities/category.entity';
       }),
     }),
     AuthModule,
+    CategoryModule,
+    TagModule,
+    ArticleModule,
   ],
   controllers: [AppController],
   providers: [AppService],
