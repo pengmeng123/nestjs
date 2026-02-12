@@ -13,7 +13,24 @@ export class UserService {
     return this.userRepository.save(dto);
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOne({ where: { id } });
+  async findOne(id: number) {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (user) {
+      return {
+        ...user,
+        password: undefined,
+      };
+    }
+    return user;
+  }
+
+  async findAll() {
+    const users = await this.userRepository.find();
+    return (users || []).map((user) => {
+      return {
+        ...user,
+        password: undefined,
+      };
+    });
   }
 }
