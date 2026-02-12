@@ -1,20 +1,39 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TagService } from './tag.service';
-import { CreateTagDto } from './dto/create-tag.dto';
+import { CreateTagDto, BatchCareteTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  @Post()
-  create(@Body() createTagDto: CreateTagDto) {
-    return this.tagService.create(createTagDto);
+  @Post('/batch')
+  batchCreateTag(@Body() batchCreateTagDto: BatchCareteTagDto) {
+    const { tags } = batchCreateTagDto;
+    return this.tagService.batchCreateTag(tags);
   }
 
-  @Get()
+  @Post('/group')
+  create(@Body() createTagDto: CreateTagDto) {
+    return this.tagService.createGroup(createTagDto);
+  }
+
+  @Get('/all')
   findAll() {
     return this.tagService.findAll();
+  }
+
+  @Get('/group')
+  findGroupAll() {
+    return this.tagService.findGroupAll();
   }
 
   @Get(':id')
