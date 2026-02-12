@@ -46,8 +46,12 @@ export class AuthService {
     const user = await this.userService.findOne(id);
     if (user) {
       return {
-        ...user,
-        password: undefined,
+        user: {
+          ...user,
+          ...(user.profile || {}),
+          password: undefined,
+          profile: undefined,
+        },
       };
     }
     return null;
