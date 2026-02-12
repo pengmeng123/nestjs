@@ -15,6 +15,10 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
+  @Post()
+  create(@Body() createTagDto: CreateTagDto) {
+    return this.tagService.create(createTagDto);
+  }
   @Post('/batch')
   batchCreateTag(@Body() batchCreateTagDto: BatchCareteTagDto) {
     const { tags } = batchCreateTagDto;
@@ -22,7 +26,7 @@ export class TagController {
   }
 
   @Post('/group')
-  create(@Body() createTagDto: CreateTagDto) {
+  createGroup(@Body() createTagDto: CreateTagDto) {
     return this.tagService.createGroup(createTagDto);
   }
 

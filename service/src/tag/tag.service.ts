@@ -4,6 +4,8 @@ import { UpdateTagDto } from './dto/update-tag.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tag } from './entities/tag.entity';
 import { TagGroup } from './entities/tag-group.entity';
+import { BusinessException } from '@/common/exceptions/business.exception';
+import { group } from 'console';
 
 @Injectable()
 export class TagService {
@@ -13,7 +15,15 @@ export class TagService {
   ) {}
 
   async create(createTagDto: CreateTagDto) {
-    return 'This action adds a new tag';
+    const { name, groupId } = createTagDto;
+    const tag = await this.findOne(name);
+    if (tag) {
+      throw new BusinessException('标签已存在', 400);
+    }
+    return this.tagRepository.save({
+      name,
+      group: groupId ? { id: groupId } : null,
+    });
   }
 
   async batchCreateTag(tags: CreateTagDto[]) {
@@ -48,11 +58,13 @@ export class TagService {
   }
 
   findGroupAll() {
-    return this.tagGroupRepository.find();
+    return this.tagGroupRepository.find({ relations: ['tags'] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} tag`;
+  findOne(name) {
+    return this.tagRepository.findOne({
+      where: { name },
+    });
   }
 
   update(id: number, updateTagDto: UpdateTagDto) {
