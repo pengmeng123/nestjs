@@ -6,6 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '@/auth/auth.module';
 import { User } from '@/user/entities/user.entity';
 import { UserProfile } from '@/user/entities/user-profile.entity';
+import { Article } from '@/article/entities/article.entity';
+import { Tag } from '@/tag/entities/tag.entity';
+import { Category } from '@/category/entities/category.entity';
 
 @Module({
   imports: [
@@ -28,7 +31,7 @@ import { UserProfile } from '@/user/entities/user-profile.entity';
         password: configService.get('PASSWORD'), // 数据库密码
         database: 'blogs', // 数据库名（需先在 MySQL 手动创建）
         // entities: [join(__dirname, '**', '*.entity.{ts,js}')], // 用 join 适配系统路径
-        entities: [User, UserProfile],
+        entities: [User, UserProfile, Article, Tag, Category],
         synchronize: configService.get('SYNCHRONIZE'), // 开发环境用（自动同步表结构），生产环境禁用！
         logging: true, // 打印 SQL 日志，方便调试
       }),
