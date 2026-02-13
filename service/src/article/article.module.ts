@@ -16,5 +16,6 @@ import { AuthModule } from '@/auth/auth.module';
   ],
   controllers: [ArticleController],
   providers: [ArticleService],
+  exports: [ArticleService],
 })
 export class ArticleModule {}

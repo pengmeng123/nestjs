@@ -8,10 +8,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { User } from '@/user/entities/user.entity';
 import { Category } from '@/category/entities/category.entity';
 import { Tag } from '@/tag/entities/tag.entity';
+import { Comment } from '@/comment/entities/comment.entity';
 
 @Entity()
 export class Article {
@@ -39,4 +41,7 @@ export class Article {
   @ManyToMany(() => Tag, (tag) => tag.articles)
   @JoinTable()
   tags: Tag[];
+
+  @OneToMany(() => Comment, (comment) => comment.article)
+  comments: Comment[];
 }

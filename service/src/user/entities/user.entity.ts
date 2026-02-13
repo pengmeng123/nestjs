@@ -9,6 +9,7 @@ import {
 import { Exclude } from 'class-transformer';
 import { UserProfile } from './user-profile.entity';
 import { Article } from '@/article/entities/article.entity';
+import { Comment } from '@/comment/entities/comment.entity';
 
 @Entity()
 export class User {
@@ -38,4 +39,7 @@ export class User {
 
   @OneToMany(() => Article, (article) => article.author)
   articles: Article[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[];
 }

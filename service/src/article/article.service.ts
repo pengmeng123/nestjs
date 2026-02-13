@@ -157,6 +157,7 @@ export class ArticleService {
 
   async remove(id: number) {
     const article = await this.articleRepository.findOne({ where: { id } });
+    console.log('article----', id, article);
     if (!article) {
       throw new BusinessException('文章不存在', 404);
     }
