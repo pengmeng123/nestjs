@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tag } from './entities/tag.entity';
 import { TagGroup } from './entities/tag-group.entity';
 import { BusinessException } from '@/common/exceptions/business.exception';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 
 @Injectable()
 export class TagService {
@@ -14,6 +14,14 @@ export class TagService {
     @InjectRepository(TagGroup)
     private readonly tagGroupRepository: Repository<TagGroup>,
   ) {}
+
+  async findByIds(ids: number[]) {
+    return this.tagRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
+  }
 
   async create(createTagDto: CreateTagDto) {
     const { name, groupId } = createTagDto;

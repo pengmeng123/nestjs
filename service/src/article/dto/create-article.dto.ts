@@ -1,7 +1,7 @@
 import { IsArray, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateArticleDto {
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Title is required' })
   title: string;
 
   @IsNotEmpty()
@@ -13,5 +13,5 @@ export class CreateArticleDto {
   @IsOptional()
   @IsArray()
   @IsNumber({}, { each: true })
-  tags?: number[];
+  tagIds?: number[];
 }
