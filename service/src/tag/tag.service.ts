@@ -1,17 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTagDto } from './dto/create-tag.dto';
+import { CreateTagDto, BatchCareteTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tag } from './entities/tag.entity';
 import { TagGroup } from './entities/tag-group.entity';
 import { BusinessException } from '@/common/exceptions/business.exception';
-import { group } from 'console';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class TagService {
   constructor(
-    @InjectRepository(Tag) private readonly tagRepository,
-    @InjectRepository(TagGroup) private readonly tagGroupRepository,
+    @InjectRepository(Tag) private readonly tagRepository: Repository<Tag>,
+    @InjectRepository(TagGroup)
+    private readonly tagGroupRepository: Repository<TagGroup>,
   ) {}
 
   async create(createTagDto: CreateTagDto) {
@@ -49,12 +50,52 @@ export class TagService {
     return results;
   }
 
-  createGroup(createTagDto: CreateTagDto) {
+  async batchUpdateTag(tags: CreateTagDto[]) {
+    const results = [];
+
+    for (const item of tags) {
+      const existTag = await this.tagRepository.findOne({
+        where: {
+          name: item.name,
+        },
+      });
+      if (existTag) {
+        if (item.groupId !== undefined) {
+          existTag.group = item.groupId
+            ? ({ id: item.groupId } as TagGroup)
+            : null;
+          const saved = await this.tagRepository.save(existTag);
+          results.push(saved);
+          continue;
+        }
+      }
+      const newTag = this.tagRepository.create({
+        name: item.name,
+        group: item.groupId ? { id: item.groupId } : null,
+      });
+      const saved = await this.tagRepository.save(newTag);
+      results.push(saved);
+    }
+    return results;
+  }
+
+  async createGroup(createTagDto: CreateTagDto) {
+    const { name } = createTagDto;
+    const group = await this.tagGroupRepository.findOne({
+      where: {
+        name,
+      },
+    });
+    if (group?.id) {
+      throw new BusinessException('分组已存在', 400);
+    }
     return this.tagGroupRepository.save(createTagDto);
   }
 
   findAll() {
-    return this.tagRepository.find();
+    return this.tagRepository.find({
+      relations: ['group'],
+    });
   }
 
   findGroupAll() {
@@ -64,14 +105,15 @@ export class TagService {
   findOne(name) {
     return this.tagRepository.findOne({
       where: { name },
+      relations: ['group'],
     });
   }
 
-  update(id: number, updateTagDto: UpdateTagDto) {
-    return `This action updates a #${id} tag`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} tag`;
+  async remove(id: number) {
+    const tag = await this.tagRepository.findOne({ where: { id } });
+    if (!tag) {
+      throw new BusinessException('标签不存在', 400);
+    }
+    return this.tagRepository.delete(id);
   }
 }

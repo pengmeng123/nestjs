@@ -3,13 +3,12 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { TagService } from './tag.service';
 import { CreateTagDto, BatchCareteTagDto } from './dto/create-tag.dto';
-import { UpdateTagDto } from './dto/update-tag.dto';
 
 @Controller('tag')
 export class TagController {
@@ -25,6 +24,12 @@ export class TagController {
     return this.tagService.batchCreateTag(tags);
   }
 
+  @Put('/batch')
+  batchUpdateTag(@Body() batchCreateTagDto: BatchCareteTagDto) {
+    const { tags } = batchCreateTagDto;
+    return this.tagService.batchUpdateTag(tags);
+  }
+
   @Post('/group')
   createGroup(@Body() createTagDto: CreateTagDto) {
     return this.tagService.createGroup(createTagDto);
@@ -38,16 +43,6 @@ export class TagController {
   @Get('/group')
   findGroupAll() {
     return this.tagService.findGroupAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tagService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTagDto: UpdateTagDto) {
-    return this.tagService.update(+id, updateTagDto);
   }
 
   @Delete(':id')

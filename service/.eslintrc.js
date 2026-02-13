@@ -21,5 +21,13 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-misused-promises': [
+      'error',
+      {
+        checksConditionals: true, // <--- 关键！禁止在 if 中直接判断 Promise
+        checksVoidReturn: false,
+      },
+    ],
+    '@typescript-eslint/no-floating-promises': 'error', // 建议也加上这个
   },
 };
