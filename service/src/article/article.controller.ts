@@ -7,20 +7,25 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { UpdateArticleDto } from './dto/update-article.dto';
 import { BatchDeleteArticleDto } from './dto/batch-delete-article.dto';
 import { ArticleQueryDto } from './dto/article-query.dto';
+import { AuthGuard } from '@/auth/auth.guard';
+import { User } from '@/common/decorators/user.decorator';
 
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articleService.create(createArticleDto);
+  @UseGuards(AuthGuard) // 只有登录用户才能发文章
+  create(@Body() createArticleDto: CreateArticleDto, @User() user) {
+    // user.sub 就是 userId
+    return this.articleService.create(createArticleDto, user.sub);
   }
 
   // 必须放在 @Get(':id') 之前，否则 batch 会被当成 id

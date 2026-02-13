@@ -49,7 +49,6 @@ export class AuthService {
         user: {
           ...user,
           ...(user.profile || {}),
-          password: undefined,
           profile: undefined,
         },
       };

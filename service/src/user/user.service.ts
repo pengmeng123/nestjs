@@ -44,23 +44,11 @@ export class UserService {
       where: { id },
       relations: ['profile'],
     });
-    if (user) {
-      return {
-        ...user,
-        password: undefined,
-      };
-    }
     return user;
   }
 
   async findAll() {
-    const users = await this.userRepository.find({ relations: ['profile'] });
-    return (users || []).map((user) => {
-      return {
-        ...user,
-        password: undefined,
-      };
-    });
+    return this.userRepository.find({ relations: ['profile'] });
   }
 
   async findOneByProfileId(id: number) {
@@ -68,11 +56,6 @@ export class UserService {
       where: { id },
       relations: ['user'],
     });
-    if (profile && profile.user) {
-      // 这里的 user 就是关联的 User 对象，记得脱敏 password
-      const { password, ...restUser } = profile.user;
-      profile.user = restUser;
-    }
     return profile;
   }
 }

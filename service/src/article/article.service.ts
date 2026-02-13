@@ -18,7 +18,7 @@ export class ArticleService {
     private readonly tagService: TagService,
   ) {}
 
-  async create(createArticleDto: CreateArticleDto) {
+  async create(createArticleDto: CreateArticleDto, userId: number) {
     const { title, content, categoryId, tagIds } = createArticleDto;
 
     // 1. 检查分类是否存在
@@ -41,7 +41,7 @@ export class ArticleService {
       content,
       category: { id: categoryId },
       tags: tagEntities,
-      // author: userId // TODO: 对接用户系统
+      author: { id: userId }, // 关联作者
     });
 
     return this.articleRepository.save(newArticle);
@@ -98,7 +98,7 @@ export class ArticleService {
      */
     const list = await this.articleRepository.find({
       where: { id: In(ids) },
-      relations: ['category', 'tags'], // 在这里统一管理需要返回的关联字段
+      relations: ['category', 'tags', 'author'], // 在这里统一管理需要返回的关联字段
       order: { createDate: 'DESC' },
     });
 

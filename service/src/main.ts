@@ -6,9 +6,9 @@ if (!global.crypto) {
   global.crypto = crypto;
 }
 
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
@@ -24,7 +24,10 @@ async function bootstrap() {
     }),
   );
   // 全局响应拦截器
-  app.useGlobalInterceptors(new TransformInterceptor());
+  app.useGlobalInterceptors(
+    new TransformInterceptor(),
+    new ClassSerializerInterceptor(app.get(Reflector)), // 启用序列化拦截器
+  );
   // 全局异常过滤器
   app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(3000);

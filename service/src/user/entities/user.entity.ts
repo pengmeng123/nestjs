@@ -6,6 +6,7 @@ import {
   JoinColumn,
   OneToMany,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { UserProfile } from './user-profile.entity';
 import { Article } from '@/article/entities/article.entity';
 
@@ -20,6 +21,7 @@ export class User {
   @Column({ type: 'varchar', nullable: false, length: 100 })
   email: string;
 
+  @Exclude() // 关键：序列化时自动剔除此字段
   @Column({ type: 'varchar', nullable: false, length: 255 })
   password: string;
 
