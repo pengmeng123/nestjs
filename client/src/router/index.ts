@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import Articles from '../views/Articles'
 import ArticleDetail from '../views/ArticleDetail'
 import Login from '../views/Login'
@@ -24,7 +24,8 @@ function createAppRouter() {
     { path: '/tag-groups', component: TagGroups },
   ]
   return createRouter({
-    history: createWebHistory((import.meta as any).env?.BASE_URL || '/'),
+    // 使用 Hash 路由，最省心地兼容 GitHub Pages 子路径
+    history: createWebHashHistory(),
     routes,
   })
 }
