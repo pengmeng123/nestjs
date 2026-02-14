@@ -24,9 +24,22 @@ export class CommentController {
     return this.commentService.create(createCommentDto, user.sub);
   }
 
+  @Get('sub')
+  findSubComments(
+    @Query('parentId', ParseIntPipe) parentId: number,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+  ) {
+    return this.commentService.findSubComments(parentId, page, pageSize);
+  }
+
   @Get()
-  findAll(@Query('articleId', ParseIntPipe) articleId: number) {
-    return this.commentService.findAll(articleId);
+  findAll(
+    @Query('articleId', ParseIntPipe) articleId: number,
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+  ) {
+    return this.commentService.findAll(articleId, page, pageSize);
   }
 
   @Delete(':id')

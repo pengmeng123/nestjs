@@ -40,4 +40,8 @@ export class Comment {
   // 自关联：子评论（回复）
   @OneToMany(() => Comment, (comment) => comment.parent)
   children: Comment[];
+
+  // 根评论（为了方便查询某条根评论下的所有子孙评论）
+  @ManyToOne(() => Comment, { nullable: true, onDelete: 'CASCADE' })
+  rootComment: Comment;
 }

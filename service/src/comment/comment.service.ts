@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull, Not } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { ArticleService } from '@/article/article.service';
@@ -28,7 +28,7 @@ export class CommentService {
     if (parentId) {
       parentComment = await this.commentRepository.findOne({
         where: { id: parentId },
-        relations: ['article'],
+        relations: ['article', 'rootComment'],
       });
       if (!parentComment) {
         throw new BusinessException('回复的评论不存在', 404);
@@ -45,50 +45,71 @@ export class CommentService {
       article: { id: articleId },
       author: { id: userId },
       parent: parentId ? { id: parentId } : null,
+      rootComment: parentComment
+        ? parentComment.rootComment || parentComment
+        : null,
     });
 
     return this.commentRepository.save(newComment);
   }
 
-  async findAll(articleId: number) {
-    // 查出该文章下的所有评论
-    const comments = await this.commentRepository.find({
-      where: { article: { id: articleId } },
-      relations: ['author', 'parent'], // 关联作者和父评论信息
-      order: { createDate: 'ASC' }, // 按时间正序，先发的在上面
+  async findAll(articleId: number, page = 1, pageSize = 10) {
+    // 1. 查一级评论（分页）
+    const [roots, total] = await this.commentRepository.findAndCount({
+      where: { article: { id: articleId }, parent: IsNull() },
+      relations: ['author'],
+      order: { createDate: 'DESC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
 
-    // 这里可以选择直接返回扁平列表，或者转换成树形结构
-    // 为了方便前端，我们转换成树形结构
-    return this.buildCommentTree(comments);
+    // 2. 查该文章下的所有子评论（非一级评论）
+    // 为了组装完整的树，我们需要这些数据
+    const allChildren = await this.commentRepository.find({
+      where: { article: { id: articleId }, parent: Not(IsNull()) },
+      relations: ['author', 'parent', 'rootComment'],
+      order: { createDate: 'ASC' },
+    });
+
+    // 3. 组装树（只针对查出来的 roots 进行组装）
+    const list = roots.map((root) => {
+      // 目标：两级扁平化展示
+      // 找出所有属于该 root 的后代（无论是直接回复还是楼中楼）
+      const descendants = allChildren.filter(
+        (c) => c.rootComment?.id === root.id,
+      );
+
+      return {
+        ...root,
+        // 扁平化展示前 3 条（按时间正序，因为 allChildren 已经按时间正序排了）
+        children: descendants.slice(0, 3),
+        replyCount: descendants.length,
+      };
+    });
+
+    return {
+      list,
+      total,
+      page,
+      pageSize,
+      pageCount: Math.ceil(total / pageSize),
+    };
   }
 
-  private buildCommentTree(comments: Comment[]) {
-    const map = new Map<number, any>();
-    const roots: any[] = [];
-
-    // 1. 初始化所有节点
-    comments.forEach((comment) => {
-      map.set(comment.id, { ...comment, children: [] });
+  async findSubComments(parentId: number, page = 1, pageSize = 10) {
+    const [list, total] = await this.commentRepository.findAndCount({
+      where: { rootComment: { id: parentId } },
+      relations: ['author', 'parent'], // 记得带上 parent 信息，或者不需要
+      order: { createDate: 'ASC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
-
-    // 2. 组装树
-    comments.forEach((comment) => {
-      const node = map.get(comment.id);
-      if (comment.parent) {
-        const parentNode = map.get(comment.parent.id);
-        if (parentNode) {
-          parentNode.children.push(node);
-        } else {
-          // 如果找不到父节点（可能被删了），就当做根节点处理，或者忽略
-          roots.push(node);
-        }
-      } else {
-        roots.push(node);
-      }
-    });
-
-    return roots;
+    return {
+      list,
+      total,
+      page,
+      pageSize,
+    };
   }
 
   async remove(id: number, userId: number) {
