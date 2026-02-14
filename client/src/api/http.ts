@@ -5,8 +5,7 @@ import axios, { AxiosInstance } from 'axios'
  */
 function createHttpClient(): AxiosInstance {
   const instance = axios.create({
-    // 统一以 /api 作为前缀，配合 Vite 代理到后端
-    baseURL: '/api',
+    baseURL: (import.meta as any).env?.VITE_API_BASE || '/api',
     timeout: 10000,
   })
 
