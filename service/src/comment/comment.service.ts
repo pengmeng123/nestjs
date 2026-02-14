@@ -72,7 +72,8 @@ export class CommentService {
     const allChildren = await this.commentRepository.find({
       where: { article: { id: articleId }, parent: Not(IsNull()) },
       relations: ['author', 'parent', 'parent.author', 'rootComment'],
-      order: { createDate: 'ASC' },
+      // 子评论按时间倒序，最新的排前面，便于预览最近互动
+      order: { createDate: 'DESC' },
     });
 
     // 批量查询点赞信息（包括：是否点赞、点赞用户列表）
@@ -121,7 +122,7 @@ export class CommentService {
         ...root,
         isLiked: rootIsLiked,
         likedUsers: rootLikedUsers,
-        // 扁平化展示前 3 条（按时间正序，因为 allChildren 已经按时间正序排了）
+        // 扁平化展示前 3 条（按时间倒序，展示最新的 3 条）
         children: descendants.slice(0, 3).map((c) => {
           const cLikes = commentLikesMap.get(c.id) || [];
           return {
@@ -156,7 +157,8 @@ export class CommentService {
     const [list, total] = await this.commentRepository.findAndCount({
       where: { rootComment: { id: parentId } },
       relations: ['author', 'parent', 'parent.author'], // 记得带上 parent 信息，或者不需要
-      order: { createDate: 'ASC' },
+      // 加载更多子回复时，同样按时间倒序
+      order: { createDate: 'DESC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });

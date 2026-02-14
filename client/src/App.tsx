@@ -25,27 +25,34 @@ export default defineComponent({
 
     return () => (
       <Layout class="min-h-screen">
-        <Layout.Header class="bg-white shadow px-6 flex items-center justify-between">
+        <Layout.Header class="bg-slate-900 px-6 flex items-center justify-between text-white">
           <div class="font-semibold">MyBlog</div>
-          <div class="flex items-center gap-3">
-            <RouterLink to="/articles">文章</RouterLink>
+          <div class="flex items-center gap-4">
+            <RouterLink to="/articles" class="text-white/80 hover:text-white">文章</RouterLink>
             {auth.profile && (
               <RouterLink to="/article/new">
                 <Button type="primary">写文章</Button>
               </RouterLink>
             )}
+            {auth.profile && (
+              <>
+                <RouterLink to="/categories" class="text-white/80 hover:text-white">分类</RouterLink>
+                <RouterLink to="/tags" class="text-white/80 hover:text-white">标签</RouterLink>
+                <RouterLink to="/tag-groups" class="text-white/80 hover:text-white">分组</RouterLink>
+              </>
+            )}
             {auth.profile ? (
-              <span class="text-gray-700">{auth.profile.name}</span>
+              <span class="text-white/90">{auth.profile.name}</span>
             ) : null}
             {auth.profile ? (
-              <Button onClick={logout}>退出</Button>
+              <Button ghost onClick={logout}>退出</Button>
             ) : (
               <>
                 <RouterLink to="/login">
-                  <Button>登录</Button>
+                  <Button ghost>登录</Button>
                 </RouterLink>
                 <RouterLink to="/register">
-                  <Button>注册</Button>
+                  <Button ghost>注册</Button>
                 </RouterLink>
               </>
             )}

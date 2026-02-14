@@ -21,6 +21,12 @@ export default defineComponent({
       categoryId: undefined,
       tagIds: [],
     })
+    const formRef = ref()
+    const rules = {
+      title: [{ required: true, message: '请输入标题' }],
+      categoryId: [{ required: true, message: '请选择分类' }],
+      content: [{ required: true, message: '请输入内容' }],
+    }
 
     async function loadMeta() {
       const [{ data: catList }, { data: tagList }] = await Promise.all([
@@ -38,7 +44,14 @@ export default defineComponent({
       }
       try {
         loading.value = true
-        await http.post('/article', form)
+        await formRef.value?.validate()
+        const payload = {
+          title: form.title?.trim(),
+          content: form.content?.trim(),
+          categoryId: form.categoryId,
+          tagIds: form.tagIds,
+        }
+        await http.post('/article', payload)
         message.success('发布成功')
         router.push('/articles')
       } catch (e: any) {
@@ -53,11 +66,11 @@ export default defineComponent({
     return () => (
       <div class="p-6 max-w-4xl mx-auto">
         <Card title="新建文章">
-          <Form layout="vertical">
-            <Form.Item label="标题">
+          <Form ref={formRef} layout="vertical" model={form} rules={rules}>
+            <Form.Item label="标题" name="title">
               <Input v-model:value={form.title} placeholder="请输入标题" />
             </Form.Item>
-            <Form.Item label="分类">
+            <Form.Item label="分类" name="categoryId">
               <Select
                 v-model:value={form.categoryId}
                 options={cats.value.map((c) => ({ label: c.name, value: c.id }))}
@@ -72,7 +85,7 @@ export default defineComponent({
                 placeholder="选择标签"
               />
             </Form.Item>
-            <Form.Item label="内容">
+            <Form.Item label="内容" name="content">
               <Input.TextArea v-model:value={form.content} rows={8} placeholder="支持纯文本" />
             </Form.Item>
             <Form.Item>
@@ -86,4 +99,3 @@ export default defineComponent({
     )
   },
 })
-

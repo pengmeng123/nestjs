@@ -108,11 +108,17 @@ export default defineComponent({
       }
     }
 
+    const SUB_PAGE_SIZE = 10
     async function loadMoreReplies(root: any) {
+      const nextPage = (root._subPage || 0) + 1
       const { data } = await http.get('/comment/sub', {
-        params: { parentId: root.id, page: 1, pageSize: 10 },
+        params: { parentId: root.id, page: nextPage, pageSize: SUB_PAGE_SIZE },
       })
-      root.children = data.list || []
+      const incoming = data.list || []
+      const existed = new Set((root.children || []).map((c: any) => c.id))
+      const toAppend = incoming.filter((c: any) => !existed.has(c.id))
+      root.children = (root.children || []).concat(toAppend)
+      root._subPage = nextPage
     }
 
     function onPageChange(p: number, ps: number) {
@@ -202,8 +208,8 @@ export default defineComponent({
                   ))}
                   {item.replyCount > ((item.children && item.children.length) || 0) ? (
                     <div class="pl-2">
-                      <Button type="link" onClick={() => loadMoreReplies(item)}>
-                        更多回复（{item.replyCount}）
+          <Button type="link" onClick={() => loadMoreReplies(item)}>
+            更多回复（{Math.max(0, item.replyCount - ((item.children && item.children.length) || 0))}）
                       </Button>
                     </div>
                   ) : null}
