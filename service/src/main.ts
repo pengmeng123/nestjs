@@ -15,6 +15,15 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+  app.enableCors({
+    origin: [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      /\.github\.io$/,
+      process.env.CORS_ORIGIN || '',
+    ].filter(Boolean) as any,
+    credentials: true,
+  });
   // 校验逻辑
   app.useGlobalPipes(
     new ValidationPipe({
@@ -30,6 +39,6 @@ async function bootstrap() {
   );
   // 全局异常过滤器
   app.useGlobalFilters(new AllExceptionsFilter());
-  await app.listen(3000);
+  await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000);
 }
 void bootstrap();
