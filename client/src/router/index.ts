@@ -24,7 +24,7 @@ function createAppRouter() {
     { path: '/tag-groups', component: TagGroups },
   ]
   return createRouter({
-    history: createWebHistory(),
+    history: createWebHistory((import.meta as any).env?.BASE_URL || '/'),
     routes,
   })
 }
