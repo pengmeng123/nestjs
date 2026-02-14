@@ -67,7 +67,7 @@ export class CommentService {
     // 为了组装完整的树，我们需要这些数据
     const allChildren = await this.commentRepository.find({
       where: { article: { id: articleId }, parent: Not(IsNull()) },
-      relations: ['author', 'parent', 'rootComment'],
+      relations: ['author', 'parent', 'parent.author', 'rootComment'],
       order: { createDate: 'ASC' },
     });
 
@@ -99,7 +99,7 @@ export class CommentService {
   async findSubComments(parentId: number, page = 1, pageSize = 10) {
     const [list, total] = await this.commentRepository.findAndCount({
       where: { rootComment: { id: parentId } },
-      relations: ['author', 'parent'], // 记得带上 parent 信息，或者不需要
+      relations: ['author', 'parent', 'parent.author'], // 记得带上 parent 信息，或者不需要
       order: { createDate: 'ASC' },
       skip: (page - 1) * pageSize,
       take: pageSize,
