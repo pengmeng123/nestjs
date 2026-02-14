@@ -11,6 +11,7 @@ import { Tag } from '@/tag/entities/tag.entity';
 import { TagGroup } from '@/tag/entities/tag-group.entity';
 import { Category } from '@/category/entities/category.entity';
 import { Comment } from '@/comment/entities/comment.entity';
+import { CommentLike } from '@/comment/entities/comment-like.entity';
 import { CategoryModule } from '@/category/category.module';
 import { TagModule } from '@/tag/tag.module';
 import { ArticleModule } from '@/article/article.module';
@@ -45,6 +46,7 @@ import { CommentModule } from '@/comment/comment.module';
           TagGroup,
           Category,
           Comment,
+          CommentLike,
         ],
         synchronize: configService.get('SYNCHRONIZE'), // 开发环境用（自动同步表结构），生产环境禁用！
         logging: true, // 打印 SQL 日志，方便调试

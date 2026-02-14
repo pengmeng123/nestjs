@@ -17,6 +17,9 @@ export class Comment {
   @Column('text')
   content: string;
 
+  @Column({ default: 0 })
+  likeCount: number;
+
   @CreateDateColumn()
   createDate: Date;
 
