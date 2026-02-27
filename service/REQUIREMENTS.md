@@ -64,3 +64,74 @@
 4.  **阶段四：性能与中间件**
     *   接入 Redis。
     *   实现文章缓存与阅读计数。
+
+
+
+
+
+
+
+
+
+后续 NestJS 进阶学习计划
+结合你刚才问的 Elasticsearch (ES)，建议按照以下阶段进行扩展，从功能完善走向架构演进。
+
+第一阶段：工程化与文档完善（查漏补缺）
+目标：让项目更规范，不仅“能跑”，而且“好维护”。
+
+Swagger API 文档（最推荐优先做）
+
+现状：目前可能靠手写文档或口头约定。
+行动：集成 @nestjs/swagger，自动生成接口文档，让前端对接更爽。
+关键词：@ApiTags, @ApiOperation, @ApiResponse。
+日志系统（Logging）
+
+现状：可能还在用 console.log。
+行动：引入 winston 或 pino，实现结构化日志，按天切割日志文件，区分 info/error 级别。
+关键词：NestInterceptor 记录请求耗时，ExceptionFilter 记录错误堆栈。
+配置管理增强
+
+现状：用了 @nestjs/config。
+行动：使用 Joi 或 class-validator 对 .env 环境变量进行校验，防止配置缺失导致启动报错。
+第二阶段：性能优化与数据进阶（引入中间件）
+目标：解决性能瓶颈，应对大数据量。
+
+Redis 缓存
+
+场景：文章详情页、热门榜单。
+行动：集成 @nestjs/cache-manager 和 redis，实现接口级缓存（@UseInterceptors(CacheInterceptor)）或手动缓存。
+Elasticsearch 全文检索（你刚才问的）
+
+场景：文章搜索（模糊匹配、高亮、分词）。
+行动：
+集成 @nestjs/elasticsearch。
+实现数据同步：MySQL -> ES（Logstash 或 代码双写）。
+实现搜索接口：替代原本低效的 LIKE '%keyword%'。
+文件上传与存储
+
+场景：用户头像、文章配图。
+行动：使用 Multer 处理上传，对接阿里云 OSS / AWS S3 对象存储，而不是存在本地磁盘。
+第三阶段：实时交互与后台任务
+目标：增强用户体验，处理异步逻辑。
+
+WebSocket (Socket.io)
+
+场景：有人评论文章时，实时通知作者；即时聊天室。
+行动：使用 @nestjs/platform-socket.io 实现 Gateway。
+定时任务与队列
+
+场景：每天凌晨统计阅读量、发送注册欢迎邮件。
+行动：
+简单任务：@nestjs/schedule (Cron Job)。
+复杂任务/削峰填谷：@nestjs/bull (基于 Redis 的消息队列) 处理异步任务。
+第四阶段：架构演进（微服务方向）
+目标：应对超大规模业务，解耦系统。
+
+微服务 (Microservices)
+
+场景：把 auth 或 email 单独拆分成服务。
+行动：尝试 gRPC 或 TCP 传输协议，学习 ClientProxy。
+GraphQL
+
+场景：前端需要灵活查询，不想每次改接口都找后端。
+行动：使用 @nestjs/graphql + Apollo，体验与 RESTful 完全不同的开发模式（Schema First 或 Code First）。
