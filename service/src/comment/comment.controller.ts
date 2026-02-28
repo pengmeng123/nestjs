@@ -11,6 +11,7 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { CommentService } from './comment.service';
@@ -19,6 +20,7 @@ import { AuthGuard } from '@/auth/auth.guard';
 import { OptionalAuthGuard } from '@/auth/optional-auth.guard';
 import { User } from '@/common/decorators/user.decorator';
 
+@ApiTags('Comment')
 @Controller('comment')
 export class CommentController {
   constructor(

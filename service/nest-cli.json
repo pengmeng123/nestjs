@@ -6,6 +6,7 @@
     "deleteOutDir": true,
     "paths": {
       "@/*": ["src/*"]
-    }
+    },
+    "plugins": ["@nestjs/swagger"]
   }
 }

@@ -7,9 +7,11 @@ import {
   Delete,
   Put,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { TagService } from './tag.service';
 import { CreateTagDto, BatchCareteTagDto } from './dto/create-tag.dto';
 
+@ApiTags('Tag')
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}

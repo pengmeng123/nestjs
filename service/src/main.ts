@@ -7,6 +7,7 @@ if (!global.crypto) {
 }
 
 import { NestFactory, Reflector } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -39,6 +40,17 @@ async function bootstrap() {
   );
   // 全局异常过滤器
   app.useGlobalFilters(new AllExceptionsFilter());
+
+  // 配置 Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Blog API')
+    .setDescription('The Blog API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
   await app.listen(process.env.PORT ? Number(process.env.PORT) : 3000);
 }
 void bootstrap();

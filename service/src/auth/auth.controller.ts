@@ -6,10 +6,12 @@ import {
   Get,
   Request,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { RegisterDto } from './auth.dto';
+import { RegisterDto, LoginDto } from './auth.dto';
 import { AuthGuard } from './auth.guard';
 
+@ApiTags('Auth')
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -20,7 +22,7 @@ export class AuthController {
   }
 
   @Post('/login')
-  login(@Body() dto) {
+  login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
 

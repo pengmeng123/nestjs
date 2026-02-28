@@ -16,7 +16,9 @@ import { BatchDeleteArticleDto } from './dto/batch-delete-article.dto';
 import { ArticleQueryDto } from './dto/article-query.dto';
 import { AuthGuard } from '@/auth/auth.guard';
 import { User } from '@/common/decorators/user.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Article')
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}

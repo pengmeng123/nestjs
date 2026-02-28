@@ -1,0 +1,14 @@
+swagger集成步骤:
+1,安装依赖@nestjs/swagger， swagger-ui-express
+2，nest-cli.json中配置"plugins": ["@nestjs/swagger"]
+3，main.json中配置
+// 配置 Swagger
+  const config = new DocumentBuilder()
+    .setTitle('Blog API')
+    .setDescription('The Blog API description')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+4，在controller中使用@ApiUseTags('标签名')装饰器，在路由中使用@ApiResponse()装饰器，详细用法参考nest-swagger文档
