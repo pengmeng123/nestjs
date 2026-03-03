@@ -12,9 +12,13 @@ import { AppModule } from './app/app.module';
 import { ValidationPipe, ClassSerializerInterceptor } from '@nestjs/common';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { LoggerConfig } from './common/logger/logger.config';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: LoggerConfig,
+  });
   app.setGlobalPrefix('api');
   app.enableCors({
     origin: [
@@ -35,6 +39,7 @@ async function bootstrap() {
   );
   // 全局响应拦截器
   app.useGlobalInterceptors(
+    new LoggingInterceptor(),
     new TransformInterceptor(),
     new ClassSerializerInterceptor(app.get(Reflector)), // 启用序列化拦截器
   );

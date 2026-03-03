@@ -4,16 +4,20 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { ApiResponse } from '../interfaces/api-response.interface';
 import { BusinessException } from '../exceptions/business.exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
+  private readonly logger = new Logger(AllExceptionsFilter.name);
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
@@ -46,6 +50,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message: Array.isArray(message) ? message[0] : message, // 如果是数组（如验证错误），取第一条
       data: null,
     };
+
+    // 记录错误日志
+    this.logger.error(
+      `[${request.method}] ${request.url} - Code: ${code} - Message: ${errorResponse.message}`,
+      exception instanceof Error ? exception.stack : null,
+    );
 
     response.status(status).json(errorResponse);
   }
